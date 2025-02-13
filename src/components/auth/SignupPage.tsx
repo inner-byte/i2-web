@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight, Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z
   .object({
@@ -32,6 +33,7 @@ const formSchema = z
 const SignupPage = () => {
   const navigate = useNavigate();
   const { signup, isLoading } = useAuth();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,9 +48,18 @@ const SignupPage = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await signup(values.email, values.password, values.name);
+      toast({
+        title: "Account created",
+        description: "You have successfully created your account.",
+      });
       navigate("/dashboard");
     } catch (error) {
       console.error("Signup failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Signup Failed",
+        description: "An error occurred during signup. Please try again.",
+      });
     }
   };
 

@@ -15,11 +15,19 @@ const ProtectedRoute = ({
   const location = useLocation();
 
   if (!user) {
+    // Redirect to login if not authenticated
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   if (requiredRole && !checkAccess(user.role, requiredRole)) {
-    return <Navigate to="/dashboard" replace />;
+    // Redirect to appropriate dashboard if user doesn't have required role
+    const redirectPath =
+      user.role === "super_admin"
+        ? "/super-admin"
+        : user.role === "admin"
+          ? "/admin"
+          : "/dashboard";
+    return <Navigate to={redirectPath} replace />;
   }
 
   return <>{children}</>;

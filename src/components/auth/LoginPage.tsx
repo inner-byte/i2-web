@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight, Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -24,7 +25,9 @@ const formSchema = z.object({
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, isLoading } = useAuth();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -37,9 +40,16 @@ const LoginPage = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await login(values.email, values.password);
-      navigate("/dashboard");
+      // Redirect to the page they tried to visit or dashboard
+      const from = location.state?.from?.pathname || "/dashboard";
+      navigate(from, { replace: true });
     } catch (error) {
       console.error("Login failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Invalid email or password. Please try again.",
+      });
     }
   };
 
@@ -122,6 +132,18 @@ const LoginPage = () => {
             </Form>
           </CardContent>
         </Card>
+
+        {/* Demo credentials */}
+        <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+          <h3 className="text-sm font-medium text-blue-800 mb-2">
+            Demo Credentials:
+          </h3>
+          <div className="space-y-1 text-sm text-blue-700">
+            <p>Super Admin: superadmin@example.com / super123</p>
+            <p>Admin: admin@example.com / admin123</p>
+            <p>Member: member@example.com / member123</p>
+          </div>
+        </div>
       </div>
     </div>
   );

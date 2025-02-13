@@ -18,6 +18,28 @@ interface AuthState {
   logout: () => void;
 }
 
+// Mock user data for different roles
+const mockUsers = [
+  {
+    email: "admin@example.com",
+    password: "admin123",
+    name: "Admin User",
+    role: "admin" as UserRole,
+  },
+  {
+    email: "superadmin@example.com",
+    password: "super123",
+    name: "Super Admin",
+    role: "super_admin" as UserRole,
+  },
+  {
+    email: "member@example.com",
+    password: "member123",
+    name: "Regular Member",
+    role: "member" as UserRole,
+  },
+];
+
 export const useAuth = create<AuthState>((set) => ({
   user: null,
   isLoading: false,
@@ -27,13 +49,21 @@ export const useAuth = create<AuthState>((set) => ({
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Mock user data - in real app, this would come from your backend
+      // Find matching user
+      const matchedUser = mockUsers.find(
+        (u) => u.email === email && u.password === password,
+      );
+
+      if (!matchedUser) {
+        throw new Error("Invalid credentials");
+      }
+
       const user: User = {
         id: "1",
-        email,
-        name: "John Doe",
-        role: "member",
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+        email: matchedUser.email,
+        name: matchedUser.name,
+        role: matchedUser.role,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${matchedUser.email}`,
       };
 
       set({ user, isLoading: false });
@@ -48,7 +78,6 @@ export const useAuth = create<AuthState>((set) => ({
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Mock user data - in real app, this would come from your backend
       const user: User = {
         id: "1",
         email,

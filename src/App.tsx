@@ -1,7 +1,5 @@
 import { Suspense } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import Home from "./components/home";
-import ProfilePage from "./components/profile/ProfilePage";
+import { Routes, Route, Navigate, useRoutes } from "react-router-dom";
 import LandingPage from "./components/landing/LandingPage";
 import LoginPage from "./components/auth/LoginPage";
 import SignupPage from "./components/auth/SignupPage";
@@ -9,35 +7,48 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminDashboard from "./components/dashboard/AdminDashboard";
 import SuperAdminDashboard from "./components/dashboard/SuperAdminDashboard";
 import MemberDashboard from "./components/dashboard/MemberDashboard";
+import ProfilePage from "./components/profile/ProfilePage";
 import { useAuth } from "./lib/auth";
+import routes from "tempo-routes";
 
 function App() {
   const { user } = useAuth();
 
+  const getDashboardComponent = () => {
+    switch (user?.role) {
+      case "super_admin":
+        return <SuperAdminDashboard />;
+      case "admin":
+        return <AdminDashboard />;
+      default:
+        return <MemberDashboard />;
+    }
+  };
+
   return (
-    <Suspense fallback={<p>Loading...</p>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center h-screen">
+          Loading...
+        </div>
+      }
+    >
+      {/* For the tempo routes */}
+      {import.meta.env.VITE_TEMPO && useRoutes(routes)}
+
       <Routes>
+        {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
 
-        {/* Dashboard Routes */}
+        {/* Protected routes */}
         <Route
           path="/dashboard"
-          element={
-            <ProtectedRoute>
-              {user?.role === "super_admin" ? (
-                <SuperAdminDashboard />
-              ) : user?.role === "admin" ? (
-                <AdminDashboard />
-              ) : (
-                <MemberDashboard />
-              )}
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute>{getDashboardComponent()}</ProtectedRoute>}
         />
 
-        {/* Admin Routes */}
+        {/* Admin routes */}
         <Route
           path="/admin/*"
           element={
@@ -47,7 +58,7 @@ function App() {
           }
         />
 
-        {/* Super Admin Routes */}
+        {/* Super admin routes */}
         <Route
           path="/super-admin/*"
           element={
@@ -57,6 +68,7 @@ function App() {
           }
         />
 
+        {/* Profile route */}
         <Route
           path="/profile"
           element={
@@ -65,6 +77,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Add tempo routes before the catchall */}
+        {import.meta.env.VITE_TEMPO && <Route path="/tempobook/*" />}
 
         {/* Fallback route */}
         <Route path="*" element={<Navigate to="/" replace />} />
