@@ -1,5 +1,5 @@
 import React from "react";
-import TopNavigation from "../layout/TopNavigation";
+import Header from "../landing/Header";
 import Sidebar from "../layout/Sidebar";
 import UserProfile from "./UserProfile";
 
@@ -7,30 +7,24 @@ interface ProfilePageProps {
   userRole?: "admin" | "regular";
   userName?: string;
   userAvatar?: string;
-  notificationCount?: number;
 }
 
 const ProfilePage = ({
   userRole = "regular",
   userName = "John Doe",
   userAvatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
-  notificationCount = 3,
 }: ProfilePageProps) => {
   return (
     <div className="min-h-screen bg-background">
-      <TopNavigation
-        userRole={userRole}
-        userName={userName}
-        userAvatar={userAvatar}
-        notificationCount={notificationCount}
-      />
-
-      <div className="flex h-[calc(100vh-64px)]">
+      <Header />
+      <div className="flex h-[calc(100vh-64px)] pt-16">
         <Sidebar isAdmin={userRole === "admin"} />
 
         <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
           <UserProfile
             user={{
+              id: "user-1",
+              status: "active",
               name: userName,
               avatar: userAvatar,
               email: "john.doe@example.com",
@@ -49,6 +43,26 @@ const ProfilePage = ({
                 eventsOrganized: 3,
                 forumPosts: 25,
               },
+              socialLinks: {
+                github: "https://github.com/johndoe",
+                linkedin: "https://linkedin.com/in/johndoe",
+                twitter: "https://twitter.com/johndoe"
+              },
+              skills: ["React", "TypeScript", "Node.js", "UI/UX Design"],
+              education: [
+                {
+                  school: "University of Technology",
+                  degree: "BS Computer Science",
+                  year: "2022"
+                }
+              ],
+              experience: [
+                {
+                  company: "Tech Corp",
+                  position: "Software Engineer",
+                  duration: "2022-Present"
+                }
+              ]
             }}
           />
         </main>

@@ -1,5 +1,5 @@
 import React from "react";
-import TopNavigation from "./layout/TopNavigation";
+import Header from "./landing/Header";
 import Sidebar from "./layout/Sidebar";
 import WelcomeSection from "./dashboard/WelcomeSection";
 import EventGrid from "./events/EventGrid";
@@ -21,21 +21,8 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <TopNavigation
-        userRole={
-          user.role === "super_admin"
-            ? "admin"
-            : user.role === "admin"
-              ? "admin"
-              : "regular"
-        }
-        userName={user.name}
-        userAvatar={user.avatar}
-        notificationCount={3}
-        onLogout={handleLogout}
-      />
-
-      <div className="flex h-[calc(100vh-64px)]">
+      <Header />
+      <div className="flex h-[calc(100vh-64px)] pt-16">
         <Sidebar
           isAdmin={user.role === "admin" || user.role === "super_admin"}
         />

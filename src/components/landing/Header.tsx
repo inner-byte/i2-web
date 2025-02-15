@@ -4,11 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { motion, AnimatePresence } from "framer-motion";
-import { Command } from "cmdk";
 import {
   Search,
   Menu,
-  X,
   Sun,
   Moon,
   User,
@@ -36,8 +34,9 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { useTheme, useThemeValue } from "@/lib/theme/theme-provider";
+import { useAuth } from "@/lib/auth";
 
-// Mock data
+// Mock data for search and notifications (could be replaced with real data later)
 const mockSearchSuggestions = [
   { type: 'project', title: 'AI Code Assistant', description: 'Popular project in AI category' },
   { type: 'member', title: 'Sarah Chen', description: 'AI Engineer' },
@@ -50,13 +49,6 @@ const mockNotifications = [
   { id: 2, type: 'event', text: 'Hackathon starting in 2 days', time: '1h ago' },
   { id: 3, type: 'message', text: 'New message from John Doe', time: '2h ago' },
 ];
-
-const mockUser = {
-  name: 'John Doe',
-  email: 'john@example.com',
-  avatar: '/avatars/john.jpg',
-  role: 'Full Stack Developer',
-};
 
 // Theme toggle component
 const ThemeToggle = () => {
@@ -98,15 +90,9 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [filteredSuggestions, setFilteredSuggestions] = useState(mockSearchSuggestions);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Mock logged-in state
   
+  const { user, logout } = useAuth();
   const { theme } = useTheme();
-  
-  // Get theme values for dynamic styling
-  const headerBg = useThemeValue('colors.background');
-  const borderColor = useThemeValue('colors.border');
-  const textColor = useThemeValue('colors.text');
-  const mutedTextColor = useThemeValue('colors.muted');
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,6 +116,23 @@ const Header = () => {
     }
   }, [searchQuery]);
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Logout Failed",
+        description: "An error occurred during logout. Please try again.",
+      });
+    }
+  };
+
   // Mock notification click handler
   const handleNotificationClick = (notification: typeof mockNotifications[0]) => {
     toast({
@@ -138,16 +141,20 @@ const Header = () => {
     });
   };
 
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .toUpperCase();
+  };
+
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
       className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b"
-      style={{
-        backgroundColor: `rgba(${headerBg}/0.8)`,
-        borderColor: borderColor as string,
-      }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -238,7 +245,7 @@ const Header = () => {
             {/* Theme Toggle */}
             <ThemeToggle />
 
-            {isLoggedIn ? (
+            {user ? (
               <>
                 {/* Notifications */}
                 <DropdownMenu>
@@ -273,27 +280,27 @@ const Header = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                       <Avatar>
-                        <AvatarImage src={mockUser.avatar} alt={mockUser.name} />
-                        <AvatarFallback>JD</AvatarFallback>
+                        <AvatarImage src={user.avatar_url} alt={user.name} />
+                        <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel>
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium">{mockUser.name}</p>
-                        <p className="text-xs text-muted-foreground">{mockUser.email}</p>
+                        <p className="text-sm font-medium">{user.name}</p>
+                        <p className="text-xs text-muted-foreground">{user.email}</p>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/profile")}>
                       <User className="mr-2 h-4 w-4" /> Profile
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/settings")}>
                       <Settings className="mr-2 h-4 w-4" /> Settings
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
+                    <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" /> Logout
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -303,7 +310,7 @@ const Header = () => {
               <div className="hidden md:flex items-center space-x-4">
                 <Button
                   variant="ghost"
-                  onClick={() => setIsLoggedIn(true)}
+                  onClick={() => navigate("/login")}
                 >
                   Sign In
                 </Button>
@@ -361,23 +368,23 @@ const Header = () => {
                     </a>
                   ))}
                   <div className="pt-4 mt-4 border-t border-border">
-                    {isLoggedIn ? (
+                    {user ? (
                       <div className="space-y-3">
                         <div className="flex items-center space-x-3 px-4">
                           <Avatar>
-                            <AvatarImage src={mockUser.avatar} alt={mockUser.name} />
-                            <AvatarFallback>JD</AvatarFallback>
+                            <AvatarImage src={user.avatar_url} alt={user.name} />
+                            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="text-sm font-medium">{mockUser.name}</p>
-                            <p className="text-xs text-muted-foreground">{mockUser.role}</p>
+                            <p className="text-sm font-medium">{user.name}</p>
+                            <p className="text-xs text-muted-foreground">{user.role}</p>
                           </div>
                         </div>
                         <Button
                           className="w-full"
                           variant="outline"
                           onClick={() => {
-                            setIsLoggedIn(false);
+                            handleLogout();
                             setIsOpen(false);
                           }}
                         >
@@ -390,7 +397,7 @@ const Header = () => {
                           className="w-full mb-3"
                           variant="outline"
                           onClick={() => {
-                            setIsLoggedIn(true);
+                            navigate("/login");
                             setIsOpen(false);
                           }}
                         >
@@ -415,7 +422,5 @@ const Header = () => {
         </div>
       </div>
     </motion.header>
-  );
-};
 
 export default Header;

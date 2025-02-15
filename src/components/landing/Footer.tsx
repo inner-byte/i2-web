@@ -32,7 +32,7 @@ const Footer = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="bg-gray-900 border-t border-gray-800"
+      className="bg-muted border-t border-muted"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -41,12 +41,12 @@ const Footer = () => {
               className="flex items-center space-x-2"
               whileHover={{ scale: 1.05 }}
             >
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">T</span>
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-primary-foreground font-bold">T</span>
               </div>
-              <span className="text-xl font-bold text-white">TechHub</span>
+              <span className="text-xl font-bold text-foreground">TechHub</span>
             </motion.div>
-            <p className="text-gray-400">
+            <p className="text-muted-foreground">
               Empowering tech enthusiasts to connect, learn, and innovate
               together.
             </p>
@@ -61,7 +61,7 @@ const Footer = () => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-gray-800 rounded-lg group"
+                  className="text-muted-foreground hover:text-foreground transition-colors p-2 hover:bg-muted/50 rounded-lg group"
                   whileHover={{ scale: 1.1 }}
                   title={social.label}
                 >
@@ -73,7 +73,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">Platform</h4>
+            <h4 className="text-lg font-semibold text-foreground mb-4">Platform</h4>
             <ul className="space-y-2">
               {[
                 { href: "/features", label: "Features" },
@@ -89,7 +89,7 @@ const Footer = () => {
                 >
                   <a
                     href={link.href}
-                    className="text-gray-400 hover:text-white transition-colors inline-flex items-center group"
+                    className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center group"
                   >
                     {link.label}
                     <ArrowRight className="h-4 w-4 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -100,7 +100,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">Company</h4>
+            <h4 className="text-lg font-semibold text-foreground mb-4">Company</h4>
             <ul className="space-y-2">
               {[
                 { href: "/about", label: "About Us" },
@@ -115,7 +115,7 @@ const Footer = () => {
                 >
                   <a
                     href={link.href}
-                    className="text-gray-400 hover:text-white transition-colors inline-flex items-center group"
+                    className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center group"
                   >
                     {link.label}
                     <ArrowRight className="h-4 w-4 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -126,10 +126,10 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">
+            <h4 className="text-lg font-semibold text-foreground mb-4">
               Newsletter
             </h4>
-            <p className="text-gray-400 mb-4">
+            <p className="text-muted-foreground mb-4">
               Stay updated with our latest features and releases.
             </p>
             <form onSubmit={handleNewsletter} className="space-y-4">
@@ -139,12 +139,12 @@ const Footer = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-muted border-input text-foreground"
                   required
                 />
                 <Button
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  variant="default"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -163,9 +163,9 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-12 pt-8">
+        <div className="border-t border-muted mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-gray-400">© 2025 TechHub. All rights reserved.</p>
+            <p className="text-muted-foreground">© 2025 TechHub. All rights reserved.</p>
             <div className="flex space-x-6">
               {[
                 { href: "/privacy", label: "Privacy Policy" },
@@ -175,7 +175,7 @@ const Footer = () => {
                 <a
                   key={index}
                   href={link.href}
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                  className="text-muted-foreground hover:text-foreground transition-colors text-sm"
                 >
                   {link.label}
                 </a>
